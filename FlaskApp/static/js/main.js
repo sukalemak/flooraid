@@ -62,6 +62,9 @@ function toggleAll(e) {
 
 menuLink.onclick = function (e) {
     toggleAll(e);
+    if (location.hostname == 'localhost'){
+    console.log("Need to go home");}
+    console.log(location.hostname);
 };
 
 content.onclick = function(e) {
@@ -76,8 +79,12 @@ content.onclick = function(e) {
 // deploying the application to a live production environment, change to
 // https://backend-dot-<PROJECT_ID>.appspot.com as specified in the
 // backend's app.yaml file.
-//var backendHostUrl = 'http://localhost:5000';
-var backendHostUrl = 'http://flask.jgorasia.com:80';
+if (location.hostname == 'localhost'){
+    var backendHostUrl = 'http://localhost:5000';
+} else {
+    var backendHostUrl = 'http://flask.jgorasia.com:80';
+}
+//console.log(location.hostname);
 
 // [START gae_python_firenotes_config]
 // Obtain the following from the "Add Firebase to your web app" dialogue

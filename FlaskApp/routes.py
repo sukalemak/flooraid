@@ -22,9 +22,22 @@ config1 = {
   "serviceAccount":"/var/www/FlaskApp/flooraid-3a654-firebase-adminsdk-3acjx-20c9629ed3.json"
 }
 
+config2 = {
+  "apiKey": "AIzaSyDub9pBkaa9WLUf_qYcCg17leBLrQlLaUY",
+  "authDomain": "flooraid-3a654.firebaseapp.com",
+  "databaseURL": "https://flooraid-3a654.firebaseio.com",
+  "storageBucket": "flooraid-3a654.appspot.com",
+  "serviceAccount":"flooraid-3a654-firebase-adminsdk-3acjx-20c9629ed3.json"
+}
+
+if 'Documents' in os.getcwd():
+    config = config2
+else:
+    config = config1
+
 HTTP_REQUEST = google.auth.transport.requests.Request()
 
-firebase = pyrebase.initialize_app(config1)
+firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
 @app.route('/')
@@ -89,4 +102,4 @@ def update_note():
 
 @app.route('/jose')
 def jose():
-    return render_template('index.html',title='ariba')
+    return render_template('index.html',title='ariba amigo')
