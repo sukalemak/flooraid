@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="logged-out">
+    <h1>Firenotes</h1>
+    <h3>Sign in to access your notebook</h3>
+    <div id="firebaseui-auth-container"></div>
+</div>
+    
+<div id="logged-in">
+    <h2>Enter an observation and save it to a cloud based storage. Text and images welcome</h2>
+    <div id="form">
+        <form class="pure-form" action="" method="post">
+            <fieldset class="pure-group">
+                <textarea id="note-content" class="pure-input-1-2" placeholder="Type note here"></textarea>
+                <input type="file" id="file_upload" name="file_upload" accept=".png">    
+            </fieldset>        
+            <button type="submit" class="pure-button pure-input-1-2 pure-button-primary" id="addnote">Save note</button>
+        </form>
+    </div>
+<hr>
+<h2>Notes</h2>
+<div id="app1">
+    <button id="testDL">TestDL</button>
+    <div class="pure-g" v-for="(detail,index) in details">
+        <div class="pure-u-16-24">
+                <span>{{detail}}</span>
+        </div>
+        <div class="pure-u-4-24">
+                <button @click="updateIndex(index)">Update</button>
+        </div>
+        <div class="pure-u-4-24">
+                <button @click="deleteIndex(index)">Delete</button>
+        </div>
+        <div class="l-box"> <img class="dlImage" src="" :id="idObject(index)" alt="Image from cloud storage">
+        </div>
+    </div>
+</div>
+
+<hr>
+{% endblock %}
