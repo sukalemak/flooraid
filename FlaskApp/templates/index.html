@@ -2,42 +2,46 @@
 
 {% block content %}
 <div id="logged-out">
-    <h1>Firenotes</h1>
-    <h3>Sign in to access your notebook</h3>
+    <h3>Sign in to access this application</h3>
     <div id="firebaseui-auth-container"></div>
 </div>
     
-<div id="logged-in">
+<div id="logged-in" class="container">
     <h2>Enter an observation and save it to a cloud based storage. Text and images welcome</h2>
-    <div class="pure-g">
-        <div id="form">
-            <form class="pure-form" action="" method="post">
-                    <textarea id="note-content" class="pure-input-1" placeholder="Type not11e here"></textarea>
-                    <input class="pure-input-1-2 "type="file" id="file_upload" name="file_upload" accept="image/*" capture="camera">    
-                <button type="submit" class="pure-button pure-input-1-2 pure-button-primary" id="addnote">Save note</button>
+    <div class="row">
+        <div class="col-sm-12 col-lg-12">
+            <form>
+                <fieldset>
+                    <legend>Observation</legend>
+                    <textarea id="note-content" class="doc" style="width:100%;" placeholder="Type observation here"></textarea>
+                    <input type="file" id="file_upload" name="file_upload" accept="image/*" capture="camera" class="inputfile" data-multiple-caption="{count} files selected" multiple>
+                    <label for="file_upload"><span>Upload image</span></label>
+                    <button type="submit" id="addnote" class="primary">Save</button>
+                </fieldset>
+                
             </form>
         </div>
     </div>
-<hr>
-<h2>Notes</h2>
-<div id="app1">
-    <button id="testDL">TestDL</button>
-    <div class="notelist">
-    <div class="pure-g" v-for="(detail,index) in details">
-        <div class="pure-u-16-24">
-                <span>{{detail}}</span>
-        </div>
-        <div class="pure-u-4-24">
-                <button @click="updateIndex(index)">Update</button>
-        </div>
-        <div class="pure-u-4-24">
-                <button @click="deleteIndex(index)">Delete</button>
-        </div>
-        <img class="dlImage" src="" :id="idObject(index)" alt="Image from cloud storage">
+    <div class="row">
+        <h2>Notes</h2>    
+    </div>
+    <div id="app1" class="row">    
+        <div class="col-md-6 col-sm-12" v-for="(detail,index) in details">
+            <div class="card fluid" >
+                <div class="section">
+                        <h3>{{detail}} <small>16:00, August 23, 2018 </small></h3>
+                        <div style="position:absolute;right:0;top:0;">
+                            <span class="icon-edit w3-hover-red" @click="updateIndex(index)" ></span>
+                            <span class="w3-hover-red w3-padding" @click="deleteIndex(index)" >X</span>
+                        </div>
+                </div>
+                <div class="section media">
+                    <img src="" :id="idObject(index)" alt="Image from cloud storage">
+                </div>
+            </div>
         </div>
     </div>
-    </div>
+        
 </div>
-
 <hr>
 {% endblock %}

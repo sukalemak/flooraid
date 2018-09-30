@@ -32,19 +32,39 @@ var app1 = new Vue({
     } 
 })    
 
+var inputs = document.querySelectorAll( '.inputfile' );
+Array.prototype.forEach.call( inputs, function( input )
+{
+	var label	 = input.nextElementSibling,
+		labelVal = label.innerHTML;
 
-document.querySelector('.notelist').addEventListener('click', function (event) {
-    if (event.target.classList.contains('dlImage')) {
-      console.log('Something happended')
-      if (event.target.style.visibility == 'hidden'){
-          event.target.style.visibility = '';
-      }
-      else {
-        event.target.style.visibility = 'hidden';
-      }
-      //event.target.setAttribute("style", "border: 1px solid blue;");
-    }
-  })
+	input.addEventListener( 'change', function( e )
+	{
+		var fileName = '';
+		if( this.files && this.files.length > 1 )
+			fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
+		else
+			fileName = e.target.value.split( '\\' ).pop();
+
+		if( fileName )
+			label.querySelector( 'span' ).innerHTML = fileName;
+		else
+			label.innerHTML = labelVal;
+	});
+});
+
+// document.querySelector('.notelist').addEventListener('click', function (event) {
+//     if (event.target.classList.contains('dlImage')) {
+//       console.log('Something happended')
+//       if (event.target.style.visibility == 'hidden'){
+//           event.target.style.visibility = '';
+//       }
+//       else {
+//         event.target.style.visibility = 'hidden';
+//       }
+//       //event.target.setAttribute("style", "border: 1px solid blue;");
+//     }
+//   })
 
 
 //Interation for the sidebar
@@ -75,18 +95,18 @@ function toggleAll(e) {
     toggleClass(menuLink, active);
 }
 
-menuLink.onclick = function (e) {
-    toggleAll(e);
-    if (location.hostname == 'localhost'){
-    console.log("Need to go home");}
-    console.log(location.hostname);
-};
+// menuLink.onclick = function (e) {
+//     toggleAll(e);
+//     if (location.hostname == 'localhost'){
+//     console.log("Need to go home");}
+//     console.log(location.hostname);
+// };
 
-content.onclick = function(e) {
-    if (menu.className.indexOf('active') !== -1) {
-        toggleAll(e);
-    }
-};
+// content.onclick = function(e) {
+//     if (menu.className.indexOf('active') !== -1) {
+//         toggleAll(e);
+//     }
+// };
 // END UIcomponents
 
 // This is the host for the backend.
@@ -184,9 +204,10 @@ signOutBtn.onclick = function() {
 };
 
 //Dummy button for tests
-testDLBtn.onclick = function (){
-    console.log("Test DL button pressed")
-}
+// testDLBtn.onclick = clickedDLBtn;
+// function clickedDLBtn(){
+//     console.log("Test DL button pressed")
+// }
 
 // Fetch notes from the backend.
 function fetchNotes() {
