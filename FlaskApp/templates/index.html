@@ -9,19 +9,20 @@
     
 <div id="logged-in">
     <h2>Enter an observation and save it to a cloud based storage. Text and images welcome</h2>
-    <div id="form">
-        <form class="pure-form" action="" method="post">
-            <fieldset class="pure-group">
-                <textarea id="note-content" class="pure-input-1-2" placeholder="Type note here"></textarea>
-                <input type="file" id="file_upload" name="file_upload" accept="image/*" capture="camera">    
-            </fieldset>        
-            <button type="submit" class="pure-button pure-input-1-2 pure-button-primary" id="addnote">Save note</button>
-        </form>
+    <div class="pure-g">
+        <div id="form">
+            <form class="pure-form" action="" method="post">
+                    <textarea id="note-content" class="pure-input-1" placeholder="Type not11e here"></textarea>
+                    <input class="pure-input-1-2 "type="file" id="file_upload" name="file_upload" accept="image/*" capture="camera">    
+                <button type="submit" class="pure-button pure-input-1-2 pure-button-primary" id="addnote">Save note</button>
+            </form>
+        </div>
     </div>
 <hr>
 <h2>Notes</h2>
 <div id="app1">
     <button id="testDL">TestDL</button>
+    <div class="notelist">
     <div class="pure-g" v-for="(detail,index) in details">
         <div class="pure-u-16-24">
                 <span>{{detail}}</span>
@@ -32,8 +33,9 @@
         <div class="pure-u-4-24">
                 <button @click="deleteIndex(index)">Delete</button>
         </div>
-        <div class="l-box"> <img class="dlImage" src="" :id="idObject(index)" alt="Image from cloud storage">
+        <img class="dlImage" src="" :id="idObject(index)" alt="Image from cloud storage">
         </div>
+    </div>
     </div>
 </div>
 

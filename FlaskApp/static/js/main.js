@@ -32,6 +32,21 @@ var app1 = new Vue({
     } 
 })    
 
+
+document.querySelector('.notelist').addEventListener('click', function (event) {
+    if (event.target.classList.contains('dlImage')) {
+      console.log('Something happended')
+      if (event.target.style.visibility == 'hidden'){
+          event.target.style.visibility = '';
+      }
+      else {
+        event.target.style.visibility = 'hidden';
+      }
+      //event.target.setAttribute("style", "border: 1px solid blue;");
+    }
+  })
+
+
 //Interation for the sidebar
 var layout   = document.getElementById('layout');
 var menu     = document.getElementById('menu');
