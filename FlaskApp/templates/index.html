@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div id="logged-out">
+<div id="logged-out" style="display: none">
     <h3>Sign in to access this application</h3>
     <div id="firebaseui-auth-container"></div>
 </div>
@@ -18,7 +18,6 @@
                     <label for="file_upload"><span>Upload image</span></label>
                     <button type="submit" id="addnote" class="primary">Save</button>
                 </fieldset>
-                
             </form>
         </div>
     </div>

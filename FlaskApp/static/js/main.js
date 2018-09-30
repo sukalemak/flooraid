@@ -53,6 +53,7 @@ Array.prototype.forEach.call( inputs, function( input )
 	});
 });
 
+// Code on how to use event.target
 // document.querySelector('.notelist').addEventListener('click', function (event) {
 //     if (event.target.classList.contains('dlImage')) {
 //       console.log('Something happended')
@@ -65,49 +66,6 @@ Array.prototype.forEach.call( inputs, function( input )
 //       //event.target.setAttribute("style", "border: 1px solid blue;");
 //     }
 //   })
-
-
-//Interation for the sidebar
-var layout   = document.getElementById('layout');
-var menu     = document.getElementById('menu');
-var menuLink = document.getElementById('menuLink');
-var content  = document.getElementById('main');
-function toggleClass(element, className) {
-    var classes = element.className.split(/\s+/);
-    var length = classes.length;
-    for(var i=0; i < length; i++) {
-        if (classes[i] === className) {
-            classes.splice(i, 1);
-            break;
-        }
-    }
-    // The className is not found
-    if (length === classes.length) {
-        classes.push(className);
-    }
-    element.className = classes.join(' ');
-}
-function toggleAll(e) {
-    var active = 'active';
-    e.preventDefault();
-    toggleClass(layout, active);
-    toggleClass(menu, active);
-    toggleClass(menuLink, active);
-}
-
-// menuLink.onclick = function (e) {
-//     toggleAll(e);
-//     if (location.hostname == 'localhost'){
-//     console.log("Need to go home");}
-//     console.log(location.hostname);
-// };
-
-// content.onclick = function(e) {
-//     if (menu.className.indexOf('active') !== -1) {
-//         toggleAll(e);
-//     }
-// };
-// END UIcomponents
 
 // This is the host for the backend.
 // TODO: When running Firenotes locally, set to http://localhost:8081. Before
@@ -140,7 +98,6 @@ var userIdToken = null;
 function configureFirebaseLogin() {
     firebase.initializeApp(config);
     fire_storage = firebase.storage();
-    // [START gae_python_state_change]
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
             document.getElementById('logged-out').style.display = 'none';
@@ -151,12 +108,8 @@ function configureFirebaseLogin() {
             user.getToken().then(function(idToken) {
                 userIdToken = idToken;
                 userUid = user.uid;
-                //console.log(userIdToken);
-                //console.log(userUid);
                 /* Now that the user is authenicated, fetch the notes. */
                 fetchNotes();
-                /* Now that the user is authenticated, fetch the image. */
-                //fetchStorage('myimg');
                 document.getElementById('user').textContent = welcomeName;
                 document.getElementById('logged-in').style.display = '';    
             });
@@ -173,7 +126,7 @@ function configureFirebaseLogin() {
 // Firebase log-in widget
 function configureFirebaseLoginWidget() {
     var uiConfig = {
-    'signInSuccessUrl': '/index',
+    'signInSuccessUrl': '/',
     'signInOptions': [
         //firebase.auth.GoogleAuthProvider.PROVIDER_ID,
         firebase.auth.EmailAuthProvider.PROVIDER_ID
@@ -211,11 +164,9 @@ signOutBtn.onclick = function() {
 
 // Fetch notes from the backend.
 function fetchNotes() {
-    console.log('Fetchnotes in the house');
+    console.log('Fetching notes from backend');
     var request = new XMLHttpRequest();
     request.open('GET',backendHostUrl + '/get',true);
-    //console.log('AGain');
-    //console.log(userIdToken);
     request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
     request.onload = function(){
         if (this.status >= 200 && this.status<400){

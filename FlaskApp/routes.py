@@ -5,7 +5,6 @@ from flask import Flask
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from werkzeug.urls import url_parse
 import pyrebase
-#import urllib.error
 import requests.exceptions
 import requests
 import json
@@ -14,7 +13,7 @@ import google.auth.transport.requests
 import google.oauth2.id_token
 import sys
 
-config1 = {
+configRemote = {
   "apiKey": "AIzaSyDub9pBkaa9WLUf_qYcCg17leBLrQlLaUY",
   "authDomain": "flooraid-3a654.firebaseapp.com",
   "databaseURL": "https://flooraid-3a654.firebaseio.com",
@@ -22,7 +21,7 @@ config1 = {
   "serviceAccount":"/var/www/FlaskApp/flooraid-3a654-firebase-adminsdk-3acjx-20c9629ed3.json"
 }
 
-config2 = {
+configLocal = {
   "apiKey": "AIzaSyDub9pBkaa9WLUf_qYcCg17leBLrQlLaUY",
   "authDomain": "flooraid-3a654.firebaseapp.com",
   "databaseURL": "https://flooraid-3a654.firebaseio.com",
@@ -31,9 +30,9 @@ config2 = {
 }
 
 if 'Documents' in os.getcwd():
-    config = config2
+    config = configLocal
 else:
-    config = config1
+    config = configRemote
 
 HTTP_REQUEST = google.auth.transport.requests.Request()
 
@@ -48,7 +47,6 @@ def index():
 @app.route('/get', methods=['GET'])
 def list_notes():
     """Returns a list of notes added by the current Firebase user."""
-    #app.logger.error('An error occur')
     id_token = request.headers['Authorization'].split(' ').pop()
     claims = google.oauth2.id_token.verify_firebase_token(
         id_token, HTTP_REQUEST)
@@ -57,22 +55,19 @@ def list_notes():
     else:
         users = db.child("users").child(claims['sub']).order_by_key().limit_to_first(20).get()
         notes = []
-        #print(users.each())
         if not users.each() == None:
             for user in users.each():
                 notes.append({'messageKey':user.key(),'message':user.val()['message']})
         else:
-            print("No content")
+            app.logger.error("No content")
         return jsonify(notes)
 
 @app.route('/post', methods=['POST'])
 def add_note():
     id_token = request.headers['Authorization'].split(' ').pop()
     claims = google.oauth2.id_token.verify_firebase_token(id_token, HTTP_REQUEST)
-    #claims = {'sub':'JtbN8sU2pdX6l2RajHSJpPoweTr1'}
     if not claims:
         return 'Unauthorized', 401
-
     data = request.get_json()
     messageKey = data.pop('messageKey')
     db.child("users").child(claims['sub']).child(messageKey).set(data)
@@ -100,6 +95,6 @@ def update_note():
     db.child("users").child(claims['sub']).child(data['messageKey']).update({'message':data['message']})
     return 'OK',200
 
-@app.route('/jose')
-def jose():
+@app.route('/test')
+def test_route():
     return render_template('index.html',title='ariba amigo')
