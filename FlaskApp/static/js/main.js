@@ -174,21 +174,29 @@ function fetchNotes() {
     request.open('GET',backendHostUrl + '/get',true);
     request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
     request.onload = function(){
-        if (this.status >= 200 && this.status<400){
+        if (this.status >= 200 && this.status<400){ //Got a response
             var data = JSON.parse(this.response);
             app1.details = [];
             app1.messageKeys = [];
             app1.dataReady = [];
             app1.imgURLs = [];
             app1.messageTimeStamps = [];
-            for (var i = 0; i < data.length; i++) {
-                app1.details.push(data[i].message);
-                app1.messageKeys.push(data[i].messageKey);
-                app1.messageTimeStamps.push(data[i].timestamp);
+            if (data.length > 0){
+                for (var i = 0; i < data.length; i++) {
+                    app1.details.push(data[i].message);
+                    app1.messageKeys.push(data[i].messageKey);
+                    app1.messageTimeStamps.push(data[i].timestamp);
+                    app1.imgURLs.push("");
+                }
+                for (i = 0; i < data.length; i++) { 
+                    fetchImageWithIndex(i);
+                }
+            }else {
+                app1.details.push('No observations');
+                app1.messageTimeStamps.push('2018-10-01T04:24:55.538Z');
                 app1.imgURLs.push("");
-            }
-            for (i = 0; i < data.length; i++) { 
-                fetchImageWithIndex(i);
+                app1.messageKeys.push("");
+                fetchImageWithIndex(0);
             }
         }else{
             console.log('Reached server, but some error');       
@@ -208,19 +216,28 @@ function fetchImageWithIndex (imgIndex) {
         console.log('Img dl success');
         app1.imgURLs[imgIndex] = url;
         app1.dataReady.push(true);
-        if (app1.dataReady.length == app1.messageKeys.length){
-            app1.allDataReady = true;
-            console.log("All data Ready is "+app1.allDataReady);
-            for (i = 0; i < app1.messageKeys.length; i++) { 
-                var img = document.getElementById('img'+i);
+        proceedIfAllDataIsReady();
+    }).catch(function(error) {
+        console.log('Download storage error');
+        app1.imgURLs[imgIndex] = "";
+        app1.dataReady.push(true);
+        proceedIfAllDataIsReady();
+    });
+}
+
+function proceedIfAllDataIsReady(){
+    if (app1.dataReady.length == app1.messageKeys.length){
+        app1.allDataReady = true;
+        console.log("All data Ready is "+app1.allDataReady);
+        for (var i = 0; i < app1.messageKeys.length; i++) { 
+            var img = document.getElementById('img'+i);
+            if (app1.imgURLs[i] == ""){
+                img.style.display = "none";
+            }else{
                 img.src = app1.imgURLs[i];
             }
         }
-    }).catch(function(error) {
-        console.log('Download storage error');
-        console.log(error);
-        app1.dataReady.push(true);
-    });
+    }
 }
 
 function deleteNotes(messageKey){

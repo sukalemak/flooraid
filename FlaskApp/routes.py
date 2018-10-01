@@ -51,18 +51,30 @@ def list_notes():
     claims = google.oauth2.id_token.verify_firebase_token(
         id_token, HTTP_REQUEST)
     if not claims:
-         return 'Unauthorized', 401
+        return 'Unauthorized', 401
     else:
-        users = db.child("users").child(claims['sub']).order_by_key().limit_to_first(20).get()
         notes = []
-        if not users.each() == None:
-            for user in users.each():
-                notes.append({'messageKey':user.key(),
-                'message':user.val()['message'],
-                'timestamp':user.val()['timestamp']})
+        try:
+            users = db.child("users").child(claims['sub']).order_by_key().limit_to_first(20).get() 
+            if not users.each() == None:
+                for user in users.each():
+                    try:
+                        notes.append({'messageKey':user.key(),
+                            'message':user.val()['message'],
+                            'timestamp':user.val()['timestamp']
+                        })
+                    except KeyError as e:
+                        app.logger.error(repr(e))
+            else:
+                raise ValueError('No content returned by server')
+        except ValueError as e:
+            app.logger.error(repr(e))
+        except Exception as e:
+            app.logger.error('Some other error in reading data from server')
         else:
-            app.logger.error("No content")
-        return jsonify(notes)
+            pass
+        finally:
+            return jsonify(notes)
 
 @app.route('/post', methods=['POST'])
 def add_note():
