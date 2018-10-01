@@ -288,8 +288,9 @@ function uploadImage(key) {
         console.log(curFiles[0].name);
         var file = curFiles[0];
         // Create the file metadata
+        var fileextension = file.name.split('.')[1];
         var metadata = {
-            contentType: 'image/jpg'
+            contentType: 'image/'+fileextension;
         };
         // Upload file and metadata to the object 'images/mountains.jpg'
         var uploadTask = fire_storage.ref().child('user/'+userUid+'/').child(key+'.png').put(file, metadata);
