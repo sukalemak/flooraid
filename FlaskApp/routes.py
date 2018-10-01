@@ -57,7 +57,9 @@ def list_notes():
         notes = []
         if not users.each() == None:
             for user in users.each():
-                notes.append({'messageKey':user.key(),'message':user.val()['message']})
+                notes.append({'messageKey':user.key(),
+                'message':user.val()['message'],
+                'timestamp':user.val()['timestamp']})
         else:
             app.logger.error("No content")
         return jsonify(notes)
@@ -95,6 +97,6 @@ def update_note():
     db.child("users").child(claims['sub']).child(data['messageKey']).update({'message':data['message']})
     return 'OK',200
 
-@app.route('/test')
-def test_route():
-    return render_template('index.html',title='ariba amigo')
+@app.route('/test/<inputString>')
+def test_route(inputString='ariba'):
+    return render_template('index.html',title=inputString)

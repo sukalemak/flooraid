@@ -7,7 +7,7 @@
 </div>
     
 <div id="logged-in" class="container">
-    <h2>Enter an observation and save it to a cloud based storage. Text and images welcome</h2>
+    <h2>Record and upload an observation</h2>
     <div class="row">
         <div class="col-sm-12 col-lg-12">
             <form>
@@ -28,7 +28,7 @@
         <div class="col-md-6 col-sm-12" v-for="(detail,index) in details">
             <div class="card fluid" >
                 <div class="section">
-                        <h3>{{detail}} <small>16:00, August 23, 2018 </small></h3>
+                        <h3>{{detail}} <small>{{getMessageTimeStamp(index)}}</small></h3>
                         <div style="position:absolute;right:0;top:0;">
                             <span class="w3-hover-red w3-padding" @click="updateIndex(index)" >edit</span>
                             <span class="w3-hover-red w3-padding" @click="deleteIndex(index)" >X</span>

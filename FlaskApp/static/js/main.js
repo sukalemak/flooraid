@@ -13,6 +13,7 @@ var app1 = new Vue({
     el: '#app1',
     data: {
         details: [],
+        messageTimeStamps:[],
         messageKeys: [],
         imgURLs: [],
         dataReady: [],
@@ -28,6 +29,10 @@ var app1 = new Vue({
         },
         deleteIndex(index){
             deleteNotes(this.messageKeys[index]);
+        },
+        getMessageTimeStamp(index){
+            var d = new Date(this.messageTimeStamps[index]);
+            return (d.toLocaleDateString('en-US')+" "+ d.toLocaleTimeString('en-US'));
         }
     } 
 })    
@@ -175,9 +180,11 @@ function fetchNotes() {
             app1.messageKeys = [];
             app1.dataReady = [];
             app1.imgURLs = [];
+            app1.messageTimeStamps = [];
             for (var i = 0; i < data.length; i++) {
                 app1.details.push(data[i].message);
                 app1.messageKeys.push(data[i].messageKey);
+                app1.messageTimeStamps.push(data[i].timestamp);
                 app1.imgURLs.push("");
             }
             for (i = 0; i < data.length; i++) { 
@@ -252,6 +259,7 @@ function updateNotes(messageKey,newText){
 // Save a note to the backend
 saveNoteBtn.addEventListener("click", function(event){
     event.preventDefault();
+    var d = new Date();
     console.log('Trying to save');
     var uniqueKey = returnUniqueKey();
     var noteField = document.getElementById('note-content');
@@ -265,7 +273,11 @@ saveNoteBtn.addEventListener("click", function(event){
             uploadImage(uniqueKey);                    
         }
     };
-    data = JSON.stringify({'message': note,'messageKey': uniqueKey});
+    data = JSON.stringify({
+        'message': note,
+        'timestamp': d.toISOString(),
+        'messageKey': uniqueKey,
+    });
     request.send(data);
 },false);
 
