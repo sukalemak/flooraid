@@ -1,5 +1,4 @@
 *.pyc
 .vscode/
 /FlaskApp/static/node_modules/*
-/FlaskApp/static/js/main2.js
 /FlaskApp/static/package.json
