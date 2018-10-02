@@ -6,42 +6,6 @@ function returnUniqueKey(){
 }
 //END Utility functions
 
-// var inputs = document.querySelectorAll( '.inputfile' );
-// Array.prototype.forEach.call( inputs, function( input )
-// {
-// 	var label	 = input.nextElementSibling;
-// 	var	labelVal = label.innerHTML;
-
-// 	input.addEventListener( 'change', function( e )
-// 	{
-//         var fileName = '';
-//         console.log(this.files);
-// 		// if( this.files && this.files.length > 1 )
-// 		// 	fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
-// 		// else
-// 		// 	fileName = e.target.value.split( '\\' ).pop();
-
-// 		// if( fileName )
-// 		// 	label.querySelector( 'span' ).innerHTML = fileName;
-// 		// else
-// 		// 	label.innerHTML = labelVal;
-// 	});
-// });
-
-// Code on how to use event.target
-// document.querySelector('.notelist').addEventListener('click', function (event) {
-//     if (event.target.classList.contains('dlImage')) {
-//       console.log('Something happended')
-//       if (event.target.style.visibility == 'hidden'){
-//           event.target.style.visibility = '';
-//       }
-//       else {
-//         event.target.style.visibility = 'hidden';
-//       }
-//       //event.target.setAttribute("style", "border: 1px solid blue;");
-//     }
-//   })
-
 // This is the host for the backend.
 // TODO: When running Firenotes locally, set to http://localhost:8081. Before
 // deploying the application to a live production environment, change to
@@ -137,6 +101,20 @@ signOutBtn.onclick = function() {
 // function clickedDLBtn(){
 //     console.log("Test DL button pressed")
 // }
+
+// Code on how to use event.target
+// document.querySelector('.notelist').addEventListener('click', function (event) {
+//     if (event.target.classList.contains('dlImage')) {
+//       console.log('Something happended')
+//       if (event.target.style.visibility == 'hidden'){
+//           event.target.style.visibility = '';
+//       }
+//       else {
+//         event.target.style.visibility = 'hidden';
+//       }
+//       //event.target.setAttribute("style", "border: 1px solid blue;");
+//     }
+//   })
 
 configureFirebaseLogin();
 configureFirebaseLoginWidget();
