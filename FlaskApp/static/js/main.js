@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function(){
+//document.addEventListener("DOMContentLoaded", function(){
 
 //START Utility functions
 function returnUniqueKey(){
@@ -359,4 +359,4 @@ function uploadImage(key) {
 configureFirebaseLogin();
 configureFirebaseLoginWidget();
 
-}); //End onload
+//}); //End onload
