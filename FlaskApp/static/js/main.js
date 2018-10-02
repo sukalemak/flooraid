@@ -98,11 +98,12 @@ var config = {
 
 // This is passed into the backend to authenticate the user.
 var userIdToken = null;
+var userUid = null;
+firebase.initializeApp(config);
+var fire_storage = firebase.storage();
 
 // START Firebase log-in
-function configureFirebaseLogin() {
-    firebase.initializeApp(config);
-    fire_storage = firebase.storage();
+function configureFirebaseLogin() {    
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
             document.getElementById('logged-out').style.display = 'none';
@@ -111,9 +112,11 @@ function configureFirebaseLogin() {
             personal welcome message. Otherwise, use the user's email. */
             var welcomeName = name ? name : user.email;
             user.getToken().then(function(idToken) {
+                window.userIdToken = idToken;
                 userIdToken = idToken;
                 userUid = user.uid;
                 /* Now that the user is authenicated, fetch the notes. */
+                ReactDOM.render( <Parent />,document.getElementById('rooter') );
                 fetchNotes();
                 document.getElementById('user').textContent = welcomeName;
                 document.getElementById('logged-in').style.display = '';    
