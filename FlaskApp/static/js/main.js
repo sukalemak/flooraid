@@ -9,33 +9,33 @@ function returnUniqueKey(){
 //END Utility functions
 
 // START UIcomponents
-var app1 = new Vue({
-    el: '#app1',
-    data: {
-        details: [],
-        messageTimeStamps:[],
-        messageKeys: [],
-        imgURLs: [],
-        dataReady: [],
-        allDataReady: false
-    },
-    methods:{
-        idObject: function (index) {
-            return 'img'+index
-        },
-        updateIndex(index){
-            var updatedMessage = prompt("Please edit the note:", this.details[index]);
-            updateNotes(this.messageKeys[index],updatedMessage)
-        },
-        deleteIndex(index){
-            deleteNotes(this.messageKeys[index]);
-        },
-        getMessageTimeStamp(index){
-            var d = new Date(this.messageTimeStamps[index]);
-            return (d.toLocaleDateString('en-US')+" "+ d.toLocaleTimeString('en-US'));
-        }
-    } 
-})    
+// var app1 = new Vue({
+//     el: '#app1',
+//     data: {
+//         details: [],
+//         messageTimeStamps:[],
+//         messageKeys: [],
+//         imgURLs: [],
+//         dataReady: [],
+//         allDataReady: false
+//     },
+//     methods:{
+//         idObject: function (index) {
+//             return 'img'+index
+//         },
+//         updateIndex(index){
+//             var updatedMessage = prompt("Please edit the note:", this.details[index]);
+//             updateNotes(this.messageKeys[index],updatedMessage)
+//         },
+//         deleteIndex(index){
+//             deleteNotes(this.messageKeys[index]);
+//         },
+//         getMessageTimeStamp(index){
+//             var d = new Date(this.messageTimeStamps[index]);
+//             return (d.toLocaleDateString('en-US')+" "+ d.toLocaleTimeString('en-US'));
+//         }
+//     } 
+// })    
 
 var inputs = document.querySelectorAll( '.inputfile' );
 Array.prototype.forEach.call( inputs, function( input )
@@ -116,8 +116,8 @@ function configureFirebaseLogin() {
                 userIdToken = idToken;
                 userUid = user.uid;
                 /* Now that the user is authenicated, fetch the notes. */
-                ReactDOM.render( <Parent />,document.getElementById('rooter') );
-                fetchNotes();
+                ReactDOM.render( <Parent />,document.getElementById('logged-in') );
+                //fetchNotes();
                 document.getElementById('user').textContent = welcomeName;
                 document.getElementById('logged-in').style.display = '';    
             });
@@ -277,87 +277,87 @@ function updateNotes(messageKey,newText){
 }
 
 // Save a note to the backend
-saveNoteBtn.addEventListener("click", function(event){
-    event.preventDefault();
-    var d = new Date();
-    console.log('Trying to save');
-    var uniqueKey = returnUniqueKey();
-    var noteField = document.getElementById('note-content');
-    var note = noteField.value;
-    var request = new XMLHttpRequest();
-    request.open('POST', backendHostUrl+'/post', true);
-    request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
-    request.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            uploadImage(uniqueKey);                    
-        }
-    };
-    data = JSON.stringify({
-        'message': note,
-        'timestamp': d.toISOString(),
-        'messageKey': uniqueKey,
-    });
-    request.send(data);
-},false);
+// saveNoteBtn.addEventListener("click", function(event){
+//     event.preventDefault();
+//     var d = new Date();
+//     console.log('Trying to save');
+//     var uniqueKey = returnUniqueKey();
+//     var noteField = document.getElementById('note-content');
+//     var note = noteField.value;
+//     var request = new XMLHttpRequest();
+//     request.open('POST', backendHostUrl+'/post', true);
+//     request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+//     request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
+//     request.onreadystatechange = function() {
+//         if (this.readyState == 4 && this.status == 200) {
+//             uploadImage(uniqueKey);                    
+//         }
+//     };
+//     data = JSON.stringify({
+//         'message': note,
+//         'timestamp': d.toISOString(),
+//         'messageKey': uniqueKey,
+//     });
+//     request.send(data);
+// },false);
 
-function uploadImage(key) {
-    var curFiles = fileInpit.files;
-    if (curFiles.length > 0){
-        console.log('Upload image');
-        console.log(curFiles[0].name);
-        var file = curFiles[0];
-        // Create the file metadata
-        var fileextension = file.name.split('.')[1];
-        var metadata = {
-            contentType: 'image/'+fileextension
-        };
-        // Upload file and metadata to the object 'images/mountains.jpg'
-        var uploadTask = fire_storage.ref().child('user/'+userUid+'/').child(key+'.png').put(file, metadata);
-        // Register three observers:
-        // 1. 'state_changed' observer, called any time the state changes
-        // 2. Error observer, called on failure
-        // 3. Completion observer, called on successful completion
-        uploadTask.on('state_changed', function(snapshot){
-            // Observe state change events such as progress, pause, and resume
-            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log('Upload is ' + progress + '% done');
-            switch (snapshot.state) {
-                case firebase.storage.TaskState.PAUSED: // or 'paused'
-                    console.log('Upload is paused');
-                    break;
-                case firebase.storage.TaskState.RUNNING: // or 'running'
-                    console.log('Upload is running');
-                    break;
-            }
-        },  function(error) {
-            // Handle unsuccessful uploads
-            switch (error.code) {
-                case 'storage/unauthorized':
-                console.log("User doesn't have permission to access the object");
-                break;
-                case 'storage/canceled':
-                // User canceled the upload
-                break;
-                case 'storage/unknown':
-                // Unknown error occurred, inspect error.serverResponse
-                break;
-            }
-        },  function() {
-                fetchNotes();
-            // Handle successful uploads on complete
-            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                    console.log('File available at', downloadURL);
-                });
-        });
-        // Listen for state changes, errors, and completion of the upload.
-    }else{
-        console.log("No file selected");
-        fetchNotes();
-    }
-};
+// function uploadImage(key) {
+//     var curFiles = fileInpit.files;
+//     if (curFiles.length > 0){
+//         console.log('Upload image');
+//         console.log(curFiles[0].name);
+//         var file = curFiles[0];
+//         // Create the file metadata
+//         var fileextension = file.name.split('.')[1];
+//         var metadata = {
+//             contentType: 'image/'+fileextension
+//         };
+//         // Upload file and metadata to the object 'images/mountains.jpg'
+//         var uploadTask = fire_storage.ref().child('user/'+userUid+'/').child(key+'.png').put(file, metadata);
+//         // Register three observers:
+//         // 1. 'state_changed' observer, called any time the state changes
+//         // 2. Error observer, called on failure
+//         // 3. Completion observer, called on successful completion
+//         uploadTask.on('state_changed', function(snapshot){
+//             // Observe state change events such as progress, pause, and resume
+//             // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+//             var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+//             console.log('Upload is ' + progress + '% done');
+//             switch (snapshot.state) {
+//                 case firebase.storage.TaskState.PAUSED: // or 'paused'
+//                     console.log('Upload is paused');
+//                     break;
+//                 case firebase.storage.TaskState.RUNNING: // or 'running'
+//                     console.log('Upload is running');
+//                     break;
+//             }
+//         },  function(error) {
+//             // Handle unsuccessful uploads
+//             switch (error.code) {
+//                 case 'storage/unauthorized':
+//                 console.log("User doesn't have permission to access the object");
+//                 break;
+//                 case 'storage/canceled':
+//                 // User canceled the upload
+//                 break;
+//                 case 'storage/unknown':
+//                 // Unknown error occurred, inspect error.serverResponse
+//                 break;
+//             }
+//         },  function() {
+//                 fetchNotes();
+//             // Handle successful uploads on complete
+//             // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+//                 uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+//                     console.log('File available at', downloadURL);
+//                 });
+//         });
+//         // Listen for state changes, errors, and completion of the upload.
+//     }else{
+//         console.log("No file selected");
+//         fetchNotes();
+//     }
+// };
 
 configureFirebaseLogin();
 configureFirebaseLoginWidget();

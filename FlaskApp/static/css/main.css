@@ -12,6 +12,10 @@
     top:0;
 }
 
+.noteInput{
+    width:100%;
+}
+
 .inputfile {
 	width: 0.1px;
 	height: 0.1px;
