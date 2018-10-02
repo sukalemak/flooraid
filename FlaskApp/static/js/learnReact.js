@@ -146,8 +146,6 @@ class Parent extends React.Component{
             'messageKey': uniqueKey,
         });
         request.send(data);
-    //     //alert('A name was submitted: ' + this.state.value);
-        //alert(this.fileInput.current.files[0].name);
     }
 
     uploadImage(key) {
@@ -185,28 +183,26 @@ class Parent extends React.Component{
                 // Handle unsuccessful uploads
                 switch (error.code) {
                     case 'storage/unauthorized':
-                    console.log("User doesn't have permission to access the object");
-                    break;
+                        console.log("User doesn't have permission to access the object");
+                        break;
                     case 'storage/canceled':
-                    // User canceled the upload
-                    break;
+                        // User canceled the upload
+                        break;
                     case 'storage/unknown':
-                    // Unknown error occurred, inspect error.serverResponse
-                    break;
+                        // Unknown error occurred, inspect error.serverResponse
+                        break;
                 }
             },  function() {
-                    //fetchNotes();
                     mainContext.fetchData();
-                // Handle successful uploads on complete
-                // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                    uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                        console.log('File available at', downloadURL);
-                    });
+                    // Handle successful uploads on complete
+                    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                    //uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                    //    console.log('File available at', downloadURL);
+                    //});
             });
             // Listen for state changes, errors, and completion of the upload.
         }else{
             console.log("No file selected");
-            //fetchNotes();
             mainContext.fetchData();
         }
     };

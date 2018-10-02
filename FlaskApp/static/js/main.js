@@ -1,5 +1,3 @@
-//document.addEventListener("DOMContentLoaded", function(){
-
 //START Utility functions
 function returnUniqueKey(){
     var array = new Uint32Array(1);
@@ -8,55 +6,27 @@ function returnUniqueKey(){
 }
 //END Utility functions
 
-// START UIcomponents
-// var app1 = new Vue({
-//     el: '#app1',
-//     data: {
-//         details: [],
-//         messageTimeStamps:[],
-//         messageKeys: [],
-//         imgURLs: [],
-//         dataReady: [],
-//         allDataReady: false
-//     },
-//     methods:{
-//         idObject: function (index) {
-//             return 'img'+index
-//         },
-//         updateIndex(index){
-//             var updatedMessage = prompt("Please edit the note:", this.details[index]);
-//             updateNotes(this.messageKeys[index],updatedMessage)
-//         },
-//         deleteIndex(index){
-//             deleteNotes(this.messageKeys[index]);
-//         },
-//         getMessageTimeStamp(index){
-//             var d = new Date(this.messageTimeStamps[index]);
-//             return (d.toLocaleDateString('en-US')+" "+ d.toLocaleTimeString('en-US'));
-//         }
-//     } 
-// })    
+// var inputs = document.querySelectorAll( '.inputfile' );
+// Array.prototype.forEach.call( inputs, function( input )
+// {
+// 	var label	 = input.nextElementSibling;
+// 	var	labelVal = label.innerHTML;
 
-var inputs = document.querySelectorAll( '.inputfile' );
-Array.prototype.forEach.call( inputs, function( input )
-{
-	var label	 = input.nextElementSibling,
-		labelVal = label.innerHTML;
+// 	input.addEventListener( 'change', function( e )
+// 	{
+//         var fileName = '';
+//         console.log(this.files);
+// 		// if( this.files && this.files.length > 1 )
+// 		// 	fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
+// 		// else
+// 		// 	fileName = e.target.value.split( '\\' ).pop();
 
-	input.addEventListener( 'change', function( e )
-	{
-		var fileName = '';
-		if( this.files && this.files.length > 1 )
-			fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
-		else
-			fileName = e.target.value.split( '\\' ).pop();
-
-		if( fileName )
-			label.querySelector( 'span' ).innerHTML = fileName;
-		else
-			label.innerHTML = labelVal;
-	});
-});
+// 		// if( fileName )
+// 		// 	label.querySelector( 'span' ).innerHTML = fileName;
+// 		// else
+// 		// 	label.innerHTML = labelVal;
+// 	});
+// });
 
 // Code on how to use event.target
 // document.querySelector('.notelist').addEventListener('click', function (event) {
@@ -152,8 +122,6 @@ function configureFirebaseLoginWidget() {
 
 var signOutBtn = document.getElementById('sign-out');
 var testDLBtn = document.getElementById('testDL');
-var saveNoteBtn = document.getElementById('addnote');
-var fileInpit = document.getElementById('file_upload');
 
 // Sign out a user
 signOutBtn.onclick = function() {
@@ -170,196 +138,5 @@ signOutBtn.onclick = function() {
 //     console.log("Test DL button pressed")
 // }
 
-// Fetch notes from the backend.
-function fetchNotes() {
-    console.log('Fetching notes from backend');
-    var request = new XMLHttpRequest();
-    request.open('GET',backendHostUrl + '/get',true);
-    request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
-    request.onload = function(){
-        if (this.status >= 200 && this.status<400){ //Got a response
-            var data = JSON.parse(this.response);
-            app1.details = [];
-            app1.messageKeys = [];
-            app1.dataReady = [];
-            app1.imgURLs = [];
-            app1.messageTimeStamps = [];
-            if (data.length > 0){
-                for (var i = 0; i < data.length; i++) {
-                    app1.details.push(data[i].message);
-                    app1.messageKeys.push(data[i].messageKey);
-                    app1.messageTimeStamps.push(data[i].timestamp);
-                    app1.imgURLs.push("");
-                }
-                for (i = 0; i < data.length; i++) { 
-                    fetchImageWithIndex(i);
-                }
-            }else {
-                app1.details.push('No observations');
-                app1.messageTimeStamps.push('2018-10-01T04:24:55.538Z');
-                app1.imgURLs.push("");
-                app1.messageKeys.push("");
-                fetchImageWithIndex(0);
-            }
-        }else{
-            console.log('Reached server, but some error');       
-        }
-    }
-    request.onerror = function() {
-        console.log('Connection error of some sort');
-    }
-    request.send();
-
-} //fetchNotes
-
-function fetchImageWithIndex (imgIndex) {
-    var imgKey = app1.messageKeys[imgIndex];
-    var storageRef = fire_storage.ref();
-    storageRef.child('user').child(userUid).child(imgKey+'.png').getDownloadURL().then(function(url) {
-        console.log('Img dl success');
-        app1.imgURLs[imgIndex] = url;
-        app1.dataReady.push(true);
-        proceedIfAllDataIsReady();
-    }).catch(function(error) {
-        console.log('Download storage error');
-        app1.imgURLs[imgIndex] = "";
-        app1.dataReady.push(true);
-        proceedIfAllDataIsReady();
-    });
-}
-
-function proceedIfAllDataIsReady(){
-    if (app1.dataReady.length == app1.messageKeys.length){
-        app1.allDataReady = true;
-        console.log("All data Ready is "+app1.allDataReady);
-        for (var i = 0; i < app1.messageKeys.length; i++) { 
-            var img = document.getElementById('img'+i);
-            if (app1.imgURLs[i] == ""){
-                img.style.display = "none";
-            }else{
-                img.src = app1.imgURLs[i];
-            }
-        }
-    }
-}
-
-function deleteNotes(messageKey){
-    var request = new XMLHttpRequest();
-    request.open('POST', backendHostUrl+'/del', true);
-    request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
-    request.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            fetchNotes();
-       }
-    };
-    data = JSON.stringify({
-        'messageKey': messageKey
-    });
-    request.send(data);    
-}
-
-function updateNotes(messageKey,newText){
-    var request = new XMLHttpRequest();
-    request.open('POST', backendHostUrl+'/update', true);
-    request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
-    request.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            fetchNotes();
-       }
-    };
-    data = JSON.stringify({
-        'messageKey': messageKey,
-        'message':newText
-    });
-    request.send(data);
-}
-
-// Save a note to the backend
-// saveNoteBtn.addEventListener("click", function(event){
-//     event.preventDefault();
-//     var d = new Date();
-//     console.log('Trying to save');
-//     var uniqueKey = returnUniqueKey();
-//     var noteField = document.getElementById('note-content');
-//     var note = noteField.value;
-//     var request = new XMLHttpRequest();
-//     request.open('POST', backendHostUrl+'/post', true);
-//     request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-//     request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
-//     request.onreadystatechange = function() {
-//         if (this.readyState == 4 && this.status == 200) {
-//             uploadImage(uniqueKey);                    
-//         }
-//     };
-//     data = JSON.stringify({
-//         'message': note,
-//         'timestamp': d.toISOString(),
-//         'messageKey': uniqueKey,
-//     });
-//     request.send(data);
-// },false);
-
-// function uploadImage(key) {
-//     var curFiles = fileInpit.files;
-//     if (curFiles.length > 0){
-//         console.log('Upload image');
-//         console.log(curFiles[0].name);
-//         var file = curFiles[0];
-//         // Create the file metadata
-//         var fileextension = file.name.split('.')[1];
-//         var metadata = {
-//             contentType: 'image/'+fileextension
-//         };
-//         // Upload file and metadata to the object 'images/mountains.jpg'
-//         var uploadTask = fire_storage.ref().child('user/'+userUid+'/').child(key+'.png').put(file, metadata);
-//         // Register three observers:
-//         // 1. 'state_changed' observer, called any time the state changes
-//         // 2. Error observer, called on failure
-//         // 3. Completion observer, called on successful completion
-//         uploadTask.on('state_changed', function(snapshot){
-//             // Observe state change events such as progress, pause, and resume
-//             // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-//             var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-//             console.log('Upload is ' + progress + '% done');
-//             switch (snapshot.state) {
-//                 case firebase.storage.TaskState.PAUSED: // or 'paused'
-//                     console.log('Upload is paused');
-//                     break;
-//                 case firebase.storage.TaskState.RUNNING: // or 'running'
-//                     console.log('Upload is running');
-//                     break;
-//             }
-//         },  function(error) {
-//             // Handle unsuccessful uploads
-//             switch (error.code) {
-//                 case 'storage/unauthorized':
-//                 console.log("User doesn't have permission to access the object");
-//                 break;
-//                 case 'storage/canceled':
-//                 // User canceled the upload
-//                 break;
-//                 case 'storage/unknown':
-//                 // Unknown error occurred, inspect error.serverResponse
-//                 break;
-//             }
-//         },  function() {
-//                 fetchNotes();
-//             // Handle successful uploads on complete
-//             // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-//                 uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-//                     console.log('File available at', downloadURL);
-//                 });
-//         });
-//         // Listen for state changes, errors, and completion of the upload.
-//     }else{
-//         console.log("No file selected");
-//         fetchNotes();
-//     }
-// };
-
 configureFirebaseLogin();
 configureFirebaseLoginWidget();
-
-//}); //End onload
