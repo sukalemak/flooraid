@@ -260,20 +260,25 @@ class Parent extends React.Component {
     handleDisplayUpdate(key,oldText){
         console.log('Parent heard update ' + key);
         var newText = prompt("Please edit the note:", oldText);
-        var request = new XMLHttpRequest();
-        request.open('POST', backendHostUrl+'/update', true);
-        request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
-        request.onreadystatechange = function() {
-            if (request.readyState == 4 && request.status == 200) {
-                this.fetchData();
-           }
-        }.bind(this);
-        var data = JSON.stringify({
-            'messageKey': key,
-            'message':newText
-        });
-        request.send(data);
+        if (newText){
+            var request = new XMLHttpRequest();
+            request.open('POST', backendHostUrl+'/update', true);
+            request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
+            request.onreadystatechange = function() {
+                if (request.readyState == 4 && request.status == 200) {
+                    this.fetchData();
+               }
+            }.bind(this);
+            var data = JSON.stringify({
+                'messageKey': key,
+                'message':newText
+            });
+            request.send(data);
+        }else{
+            console.log("Update cancelled");
+        }
+
     }
 
     handleDisplayDelete(key){
