@@ -7,10 +7,6 @@ function returnUniqueKey(){
 //END Utility functions
 
 // This is the host for the backend.
-// TODO: When running Firenotes locally, set to http://localhost:8081. Before
-// deploying the application to a live production environment, change to
-// https://backend-dot-<PROJECT_ID>.appspot.com as specified in the
-// backend's app.yaml file.
 if (location.hostname == 'localhost'){
     var backendHostUrl = 'http://localhost:5000';
 } else {
@@ -18,9 +14,8 @@ if (location.hostname == 'localhost'){
 }
 //console.log(location.hostname);
 
-// [START gae_python_firenotes_config]
+// [START firenotes_config]
 // Obtain the following from the "Add Firebase to your web app" dialogue
-// Initialize Firebase
 var config = {
     apiKey: "AIzaSyDub9pBkaa9WLUf_qYcCg17leBLrQlLaUY",
     authDomain: "flooraid-3a654.firebaseapp.com",
@@ -28,7 +23,7 @@ var config = {
     projectId: "flooraid-3a654",
     storageBucket: "flooraid-3a654.appspot.com"
 };
-// [END gae_python_firenotes_config]
+// [END firenotes_config]
 
 // This is passed into the backend to authenticate the user.
 var userIdToken = null;
