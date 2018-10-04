@@ -1,13 +1,13 @@
 class ImageBox extends React.Component{
     constructor(props){
         super(props);
-        this.state = {data:null};
+        this.state = {data:null,
+        showFullImage:false};
     }
     componentDidMount () {
         var imgKey = this.props.name;
         var storageRef = fire_storage.ref();
         var ImageBoxObject = this;
-        console.log(this.props);
         if (this.props.imagePresent){
             storageRef.child('user').child(userUid).child(imgKey+'.png').getDownloadURL()
             .then(function(result) {
@@ -18,14 +18,21 @@ class ImageBox extends React.Component{
             });
         }
     }
+    handleImageClick(e){
+        this.state.showFullImage ? this.setState({showFullImage:false}) : this.setState({showFullImage:true}); 
+    }
     render(){
         if (this.props.imagePresent){
             if (this.state.data) {
+                const sectionClassname = this.state.showFullImage ? "section medialarge":"section media";
                 return (
-                    <div className="section media">
-                        <img src={this.state.data} alt="Image from cloud storage"></img>
+                    <div className={sectionClassname} onClick={(e) => this.handleImageClick(e)}>
+                        <img    
+                            src={this.state.data} 
+                            alt="Image from cloud storage" 
+                        />
                     </div>)
-            }
+                }
             return <div>Loading...</div>
         }
         return <div></div>

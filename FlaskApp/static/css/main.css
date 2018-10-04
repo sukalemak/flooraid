@@ -37,3 +37,9 @@
 .inputfile + label:hover {
     background-color: red;
 }
+
+.card > .section.medialarge {
+    padding: 0;
+    -o-object-fit: fill;
+    object-fit: fill;
+}
