@@ -50,7 +50,7 @@ function configureFirebaseLogin() {
                 userIdToken = idToken;
                 userUid = user.uid;
                 /* Now that the user is authenicated, fetch the notes. */
-                ReactDOM.render( <NewParent />,document.getElementById('logged-in') );
+                ReactDOM.render( <Parent />,document.getElementById('logged-in') );
                 document.getElementById('user').textContent = welcomeName;
                 document.getElementById('logged-in').style.display = '';    
             });

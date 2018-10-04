@@ -135,7 +135,7 @@ class NewObservationInput extends React.Component {
     }
   }
   
-class NewParent extends React.Component {
+class Parent extends React.Component {
     constructor(props) {
         super(props);
         this.handleInputSubmit = this.handleInputSubmit.bind(this);
