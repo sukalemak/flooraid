@@ -231,6 +231,9 @@ class Parent extends React.Component{
             return (
             <div className="container">
                 <div className="row">
+                    <NewParent /> 
+                </div>
+                <div className="row">
                     <div className="col-sm-12 col-lg-12">
                         <form onSubmit={this.handleSubmit}>
                             <fieldset>
@@ -249,79 +252,136 @@ class Parent extends React.Component{
                 <div className="row">
                     {this.state.renderText}
                 </div>
-                <div className="row">
-                    <Calculator /> 
-                </div>
+                
             </div>
             );
         }
         return <div>Loading...</div>;
     }
 };
+  
+class CardsDisplay extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleUpdateRow = this.handleUpdateRow.bind(this);
+        this.handleDeleteRow = this.handleDeleteRow.bind(this);
+    }
+    
+    handleDeleteRow(key,e){
+        console.log('Child Delete ' +key);
+        this.props.onDisplayDelete(key);
+    }
 
-class NewObservationForm extends React.Component {
+    handleUpdateRow(key,message,e){
+        console.log('Child Update' +key);
+        this.props.onDisplayUpdate(key,message);
+    }
+
+    render(){
+        if (this.props.observationData){
+            //return <p>{props.observationData[0].message}</p>
+            return this.props.observationData.map((singleEntry) =>
+            (<div className="col-md-6 col-sm-12" key={singleEntry.messageKey}>
+                <div className="card fluid" >
+                    <div className="section">
+                        <h3>{singleEntry.message}  <ReadAbleTime date={singleEntry.timestamp}/></h3>
+                        <div className="posTopRight">
+                            <span className="w3-hover-red w3-padding" 
+                            onClick={(e) => this.handleUpdateRow(singleEntry.messageKey, singleEntry.message,e)}>edit</span>
+                            <span className="w3-hover-red w3-padding" 
+                            onClick={(e) => this.handleDeleteRow(singleEntry.messageKey, e)}>X</span>
+                        </div>
+                    </div>
+                    <div className="section media">
+                        <ImageBox name={singleEntry.messageKey}/>
+                    </div>
+                </div>
+            </div>)
+            ); //End map
+        }
+        return <p>The water would not boil. </p>;
+    }
+}
+  
+class NewObservationInput extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            value2: "",
-            fileInputLabel: "Upload image"
+            value: '',
+            fileInputValue:null,
+            fileInputLabel:'Upload image'
         };
-        this.fileInput2 = React.createRef();
-       // this.handleSubmit = this.handleSubmit.bind(this);
-    };
-
-    handleChange = (event) => {
-        this.setState({value2: event.target.value});
-        //this.props.parentMethod(event.target.value);
+        this.fileInput = React.createRef();
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleFileInputChange = this.handleFileInputChange.bind(this);
+    }
+  
+    handleChange(e) {
+        this.setState({value: e.target.value});
     }
 
-    handleFileInputChange = (event) => {
-        console.log('File input changed');
-        var curFiles = this.fileInput2.current.files;
+    handleSubmit(e){
+        e.preventDefault();
+        this.props.onChildSubmit(this.state.value);
+    }
+
+    handleFileInputChange(e){
+        console.log("File input changed");
+        var curFiles = this.fileInput.current.files;
         if (curFiles.length > 0){
-            if (curFiles.length == 1){
-                this.setState({fileInputLabel: curFiles[0].name});
-            }else{
-                this.setState({fileInputLabel: curFiles.length+" files selected"});
-            }
-            
+            this.setState({fileInputLabel: curFiles.length+" files selected"});
+            this.props.onFileInputChange(curFiles);
         }else{
             this.setState({fileInputLabel: "No file selected"});
         }
     }
-
-    handleTestClick = (event) =>{
-        this.props.parentMethod();
+  
+    render() {
+        return (
+            <div className="col-sm-12 col-lg-12"><form onSubmit={this.handleSubmit}>
+                <fieldset>
+                    <legend>Observation</legend>
+                    <textarea className="doc noteInput" value={this.state.value} onChange={this.handleChange} placeholder="Type observation here"/>
+                    <input type="file" id="file_upload3" ref={this.fileInput} name="file_upload" accept="image/*" capture="camera" onChange={this.handleFileInputChange} className="inputfile" multiple />
+                    <label htmlFor="file_upload3"><span>{this.state.fileInputLabel}</span></label>
+                    <button type="submit" id="addnote" className="primary">Save</button>
+                </fieldset>
+            </form></div>
+        );
+    }
+  }
+  
+class NewParent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleInputSubmit = this.handleInputSubmit.bind(this);
+        this.handleFileInputChange = this.handleFileInputChange.bind(this);
+        this.handleDisplayDelete = this.handleDisplayDelete.bind(this);
+        this.handleDisplayUpdate = this.handleDisplayUpdate.bind(this);
+        this.state = {temperature: '', scale: 'c',dataR:null,fileToUpload:null};
     }
 
-    handleSubmit = (event) =>{
-        event.preventDefault();
-        console.log('Trying to save');
-        var messageTimestamp = new Date();
-        var uniqueKey = returnUniqueKey();
+    fetchData(){
         var request = new XMLHttpRequest();
-        request.open('POST', backendHostUrl+'/post', true);
-        request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
-        request.onreadystatechange = function() {
-            if (request.readyState == 4 && request.status == 200) {
-                //this.uploadImage(uniqueKey);
-                this.props.parentMethod();  
-                console.log('Mission done on the inside')                  
+        request.open('GET',backendHostUrl + '/get',true);
+        request.setRequestHeader('Authorization', 'Bearer ' + window.userIdToken);
+        request.onload = function(){
+            if (request.status >= 200 && request.status<400){ //Got a response
+                var requestData = JSON.parse(request.response);
+                this.setState({dataR: requestData});
+            }else{
+                console.log('Reached server, but some error');       
             }
         }.bind(this);
-        var data = JSON.stringify({
-            'message': this.state.value2,
-            'timestamp': messageTimestamp.toISOString(),
-            'messageKey': uniqueKey
-        });
-        request.send(data);
-        //console.log(this.state.value2);
-        //this.props.parentMethod(this.state.value2);
+        request.onerror = function() {
+            console.log('Connection error of some sort');
+        }
+        request.send();
     }
 
-    handleSubmit2(event){
-        event.preventDefault();
+    handleInputSubmit(temperature) {
+        //this.setState({scale: 'c', temperature:temperature}, () => this.fetchData());
         console.log('Trying to save');
         var messageTimestamp = new Date();
         var uniqueKey = returnUniqueKey();
@@ -331,121 +391,153 @@ class NewObservationForm extends React.Component {
         request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
         request.onreadystatechange = function() {
             if (request.readyState == 4 && request.status == 200) {
-                this.uploadImage(uniqueKey);  
+                if (this.state.fileToUpload){
+                    console.log('Image to upload');
+                    this.uploadImage(uniqueKey);
+                }else{
+                    console.log('No image to upload');
+                    this.fetchData();
+                }
                 console.log('Mission done')                  
             }
         }.bind(this);
         var data = JSON.stringify({
-            'message': this.state.value,
+            'message': temperature,
             'timestamp': messageTimestamp.toISOString(),
             'messageKey': uniqueKey,
         });
         request.send(data);
     }
 
-    render() {
-        return (<div className="col-sm-12 col-lg-12">
-            <form onSubmit={this.handleSubmit}><fieldset>
-                <legend>Observation</legend>
-                <textarea id="note-content" className="doc noteInput" value={this.state.value2} onChange={this.handleChange} placeholder="Type observation here"/>
-                <input type="file" id="file_upload2" ref={this.fileInput2} name="file_upload" accept="image/*" capture="camera" onChange={this.handleFileInputChange} className="inputfile" multiple />
-                <label htmlFor="file_upload2"><span>{this.state.fileInputLabel}</span></label>
-                <button type="submit" id="addnote" className="primary">Save</button>
-            </fieldset></form>
-            <button onClick={this.handleTestClick}>Test something </button>
-        </div>)
-    }
-}
+    uploadImage(key) { 
+        var mainContext = this;
+        console.log('Upload image');
+        console.log(this.state.fileToUpload.name);
+        var file = this.state.fileToUpload;
+        var fileextension = file.name.split('.')[1];
+        var metadata = {
+            contentType: 'image/'+fileextension
+        };
+        // Upload file and metadata to the object 'images/mountains.jpg'
+        var uploadTask = fire_storage.ref().child('user/'+userUid+'/').child(key+'.png').put(file, metadata);
+        // Register three observers:
+        // 1. 'state_changed' observer, called any time the state changes
+        // 2. Error observer, called on failure
+        // 3. Completion observer, called on successful completion
+        uploadTask.on('state_changed', function(snapshot){
+            // Observe state change events such as progress, pause, and resume
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+            switch (snapshot.state) {
+                case firebase.storage.TaskState.PAUSED: // or 'paused'
+                    console.log('Upload is paused');
+                    break;
+                case firebase.storage.TaskState.RUNNING: // or 'running'
+                    console.log('Upload is running');
+                    break;
+            }
+        },  function(error) {
+            // Handle unsuccessful uploads
+            switch (error.code) {
+                case 'storage/unauthorized':
+                    console.log("User doesn't have permission to access the object");
+                    break;
+                case 'storage/canceled':
+                    // User canceled the upload
+                    break;
+                case 'storage/unknown':
+                    // Unknown error occurred, inspect error.serverResponse
+                    break;
+            }
+        },  function() {
+                mainContext.fetchData();
+                // Handle successful uploads on complete
+                // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                //uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                //    console.log('File available at', downloadURL);
+                //});
+        });
+        // Listen for state changes, errors, and completion of the upload.
+    };
 
-const scaleNames = {
-    c: 'Celsius',
-    f: 'Fahrenheit'
-  };
-  
-function toCelsius(fahrenheit) {
-    return (fahrenheit - 32) * 5 / 9;
-}
-  
-function toFahrenheit(celsius) {
-    return (celsius * 9 / 5) + 32;
-}
-  
-function tryConvert(temperature, convert) {
-    const input = parseFloat(temperature);
-    if (Number.isNaN(input)) {
-      return '';
+    handleFileInputChange(curFiles){
+        if (curFiles.length > 0){
+            console.log('Upload image');
+            console.log(curFiles[0].name);
+            this.setState({fileToUpload:curFiles[0]});
+        }else{
+            this.setState({fileToUpload:null})
+        }
     }
-    const output = convert(input);
-    const rounded = Math.round(output * 1000) / 1000;
-    return rounded.toString();
-}
-  
-function BoilingVerdict(props) {
-    if (props.celsius >= 100) {
-      return <p>The water would boil.</p>;
+
+    handleDisplayUpdate(key,oldText){
+        console.log('Parent heard update ' + key);
+        var newText = prompt("Please edit the note:", oldText);
+        var request = new XMLHttpRequest();
+        request.open('POST', backendHostUrl+'/update', true);
+        request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
+        request.onreadystatechange = function() {
+            if (request.readyState == 4 && request.status == 200) {
+                this.fetchData();
+           }
+        }.bind(this);
+        var data = JSON.stringify({
+            'messageKey': key,
+            'message':newText
+        });
+        request.send(data);
     }
-    return <p>The water would not boil.</p>;
-  }
-  
-class TemperatureInput extends React.Component {
-    constructor(props) {
-        super(props);
-        this.handleChange = this.handleChange.bind(this);
+
+    handleDisplayDelete(key){
+        console.log('Parent heard delete ' + key)
+        var request = new XMLHttpRequest();
+        request.open('POST', backendHostUrl+'/del', true);
+        request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        request.setRequestHeader('Authorization', 'Bearer ' + window.userIdToken);
+        request.onreadystatechange = function() {
+            if (request.readyState == 4 && request.status == 200) {
+                this.fetchData();
+           }
+        }.bind(this);
+        var data = JSON.stringify({
+            'messageKey': key
+        });
+        request.send(data); 
     }
-  
-    handleChange(e) {
-      this.props.onTemperatureChange(e.target.value);
-    }
-  
+
     render() {
-      const temperature = this.props.temperature;
-      const scale = this.props.scale;
-      return (
-        <fieldset>
-          <legend>Enter temperature in {scaleNames[scale]}:</legend>
-          <input value={temperature}
-                 onChange={this.handleChange} />
-        </fieldset>
-      );
-    }
-  }
-  
-class Calculator extends React.Component {
-    constructor(props) {
-      super(props);
-      this.handleCelsiusChange = this.handleCelsiusChange.bind(this);
-      this.handleFahrenheitChange = this.handleFahrenheitChange.bind(this);
-      this.state = {temperature: '', scale: 'c'};
-    }
-  
-    handleCelsiusChange(temperature) {
-      this.setState({scale: 'c', temperature});
-    }
-  
-    handleFahrenheitChange(temperature) {
-      this.setState({scale: 'f', temperature});
-    }
-  
-    render() {
-      const scale = this.state.scale;
-      const temperature = this.state.temperature;
-      const celsius = scale === 'f' ? tryConvert(temperature, toCelsius) : temperature;
-      const fahrenheit = scale === 'c' ? tryConvert(temperature, toFahrenheit) : temperature;
-  
-      return (
-        <div>
-          <TemperatureInput
-            scale="c"
-            temperature={celsius}
-            onTemperatureChange={this.handleCelsiusChange} />
-          <TemperatureInput
-            scale="f"
-            temperature={fahrenheit}
-            onTemperatureChange={this.handleFahrenheitChange} />
-          <BoilingVerdict
-            celsius={parseFloat(celsius)} />
-        </div>
-      );
+        if (this.state.dataR == null){
+            this.fetchData();
+            return <div>Loading all observations...</div>;
+        }
+            return (
+                <div>
+                <div className="row">
+                    <NewObservationInput
+                        onChildSubmit={this.handleInputSubmit} 
+                        onFileInputChange={this.handleFileInputChange}/>
+                </div>
+                <div className="row">
+                        <h2>Notes</h2> 
+                </div>
+                <div className="row">
+                    <CardsDisplay 
+                        observationData={this.state.dataR}
+                        onDisplayUpdate={this.handleDisplayUpdate}
+                        onDisplayDelete={this.handleDisplayDelete}/>      
+                </div>
+                </div>
+            );
+        
+        //return <div>Loading all observations...</div>
+        //const scale = this.state.scale;
+        //const temperature = this.state.temperature;
+        //const celsius = scale === 'f' ? tryConvert(temperature, toCelsius) : temperature;
+        //const celsius = temperature;
+    
+
     }
   }
 
