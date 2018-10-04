@@ -137,7 +137,32 @@ class NewObservationInput extends React.Component {
             </form></div>
         );
     }
-  }
+}
+
+class DisplayFilter extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: ''
+        };
+        this.handleFilterTodayChange = this.handleFilterTodayChange.bind(this);
+    }
+  
+
+    handleFilterTodayChange(e){
+        console.log("Trying to filter " + e.target.name);
+        this.props.onFilterToday(e.target.name);
+    }
+  
+    render() {
+        return (
+            <div className="col-sm-12 col-lg-12">
+                <button name="filterShowAll" className="primary" onClick={this.handleFilterTodayChange}> All </button>
+                <button name="filterToday" className="primary" onClick={this.handleFilterTodayChange}> Today </button>
+            </div>
+        );
+    }
+} 
   
 class Parent extends React.Component {
     constructor(props) {
@@ -146,10 +171,12 @@ class Parent extends React.Component {
         this.handleFileInputChange = this.handleFileInputChange.bind(this);
         this.handleDisplayDelete = this.handleDisplayDelete.bind(this);
         this.handleDisplayUpdate = this.handleDisplayUpdate.bind(this);
-        this.state = {dataR:null,fileToUpload:null};
+        this.handleFilterTodayChange = this.handleFilterTodayChange.bind(this);
+        this.state = {dataR:null,dataF:null,fileToUpload:null};
     }
 
     fetchData(){
+        console.log('Fetching fresh data');
         var request = new XMLHttpRequest();
         request.open('GET',backendHostUrl + '/get',true);
         request.setRequestHeader('Authorization', 'Bearer ' + window.userIdToken);
@@ -295,9 +322,38 @@ class Parent extends React.Component {
         request.send(data); 
     }
 
+    handleFilterTodayChange(filterType){
+        console.log("Parent heard to filter for today");
+        if (filterType == 'filterToday'){
+            const rawRetrivedData = this.state.dataR;
+            const filteredRetrivedData = rawRetrivedData.filter(singleItem => {
+                const now = new Date();
+                const d = new Date(singleItem.timestamp);
+                if (d.toLocaleDateString() == now.toLocaleDateString()){
+                    return (singleItem)
+                }else{
+                    return null
+                }
+            });
+            this.setState({dataF:filteredRetrivedData})
+        } else if(filterType =='filterShowAll'){
+            this.setState({dataF:null});
+        }
+       
+    }
+
+    componentDidMount() {
+        this.fetchData();
+    }
+
     render() {
+        var dataToRender = null;
+        if (this.state.dataF == null){
+            dataToRender = this.state.dataR;
+        }else{
+            dataToRender = this.state.dataF;
+        }
         if (this.state.dataR == null){
-            this.fetchData();
             return <div>Loading all observations...</div>;
         }
         return (
@@ -308,11 +364,15 @@ class Parent extends React.Component {
                     onFileInputChange={this.handleFileInputChange}/>
             </div>
             <div className="row">
-                    <h2>Notes</h2> 
+                <h2>Notes</h2> 
+            </div>
+            <div className="row">
+                <DisplayFilter 
+                    onFilterToday={this.handleFilterTodayChange}/> 
             </div>
             <div className="row">
                 <CardsDisplay 
-                    observationData={this.state.dataR}
+                    observationData={dataToRender}
                     onDisplayUpdate={this.handleDisplayUpdate}
                     onDisplayDelete={this.handleDisplayDelete}/>      
             </div>
