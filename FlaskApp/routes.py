@@ -55,7 +55,8 @@ def list_notes():
     else:
         notes = []
         try:
-            users = db.child("users").child(claims['sub']).order_by_key().limit_to_first(20).get() 
+            users = db.child("users").child(claims['sub']).order_by_child('timestamp').limit_to_first(10).get()
+            #users = db.child("users").child(claims['sub']).get() 
             if not users.each() == None:
                 for user in users.each():
                     try:
@@ -72,6 +73,7 @@ def list_notes():
             app.logger.error(repr(e))
         except Exception as e:
             app.logger.error('Some other error in reading data from server')
+            app.logger.error(repr(e))
         else:
             pass
         finally:

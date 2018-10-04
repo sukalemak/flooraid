@@ -130,13 +130,10 @@ class NewObservationInput extends React.Component {
     render() {
         return (
             <div className="col-sm-12 col-lg-12"><form onSubmit={this.handleSubmit}>
-                <fieldset>
-                    <legend>Observation</legend>
                     <textarea className="doc noteInput" value={this.state.value} onChange={this.handleChange} placeholder="Type observation here"/>
                     <input type="file" id="file_upload3" ref={this.fileInput} name="file_upload" accept="image/*" capture="camera" onChange={this.handleFileInputChange} className="inputfile" multiple />
                     <label htmlFor="file_upload3"><span>{this.state.fileInputLabel}</span></label>
                     <button type="submit" id="addnote" className="primary">Save</button>
-                </fieldset>
             </form></div>
         );
     }
