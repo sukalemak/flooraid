@@ -61,7 +61,8 @@ def list_notes():
                     try:
                         notes.append({'messageKey':user.key(),
                             'message':user.val()['message'],
-                            'timestamp':user.val()['timestamp']
+                            'timestamp':user.val()['timestamp'],
+                            'imagePresent':user.val()['imagePresent']
                         })
                     except KeyError as e:
                         app.logger.error(repr(e))
