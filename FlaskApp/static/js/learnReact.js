@@ -358,6 +358,7 @@ class Parent extends React.Component {
         }
         return (
             <div className="container">
+            
             <div className="row">
                 <NewObservationInput
                     onChildSubmit={this.handleInputSubmit} 
