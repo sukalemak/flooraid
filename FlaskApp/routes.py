@@ -12,27 +12,13 @@ import os
 import google.auth.transport.requests
 import google.oauth2.id_token
 import sys
+import FlaskApp.config
 
-configRemote = {
-  "apiKey": "AIzaSyDub9pBkaa9WLUf_qYcCg17leBLrQlLaUY",
-  "authDomain": "flooraid-3a654.firebaseapp.com",
-  "databaseURL": "https://flooraid-3a654.firebaseio.com",
-  "storageBucket": "flooraid-3a654.appspot.com",
-  "serviceAccount":"/var/www/FlaskApp/flooraid-3a654-firebase-adminsdk-3acjx-20c9629ed3.json"
-}
-
-configLocal = {
-  "apiKey": "AIzaSyDub9pBkaa9WLUf_qYcCg17leBLrQlLaUY",
-  "authDomain": "flooraid-3a654.firebaseapp.com",
-  "databaseURL": "https://flooraid-3a654.firebaseio.com",
-  "storageBucket": "flooraid-3a654.appspot.com",
-  "serviceAccount":"flooraid-3a654-firebase-adminsdk-3acjx-20c9629ed3.json"
-}
 
 if 'Documents' in os.getcwd():
-    config = configLocal
+    config = FlaskApp.config.configLocal
 else:
-    config = configRemote
+    config = FlaskApp.config.configRemote
 
 HTTP_REQUEST = google.auth.transport.requests.Request()
 
