@@ -2,3 +2,4 @@
 .vscode/
 /FlaskApp/static/node_modules/*
 /FlaskApp/static/package.json
+admin.json
