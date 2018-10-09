@@ -365,7 +365,7 @@ class Parent extends React.Component {
                     onFileInputChange={this.handleFileInputChange}/>
             </div>
             <div className="row">
-                <h2>Notes</h2> 
+                <h2>Note</h2> 
             </div>
             <div className="row">
                 <DisplayFilter 
