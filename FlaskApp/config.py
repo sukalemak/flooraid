@@ -3,7 +3,7 @@ configRemote = {
   "authDomain": "flooraid-3a654.firebaseapp.com",
   "databaseURL": "https://flooraid-3a654.firebaseio.com",
   "storageBucket": "flooraid-3a654.appspot.com",
-  "serviceAccount":"/var/www/FlaskApp/flooraid-3a654-firebase-adminsdk-3acjx-20c9629ed3.json"
+  "serviceAccount":"/var/www/FlaskApp/admin.json"
 }
 
 configLocal = {
