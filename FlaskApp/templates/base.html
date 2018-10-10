@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="/static/css/main.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
     <script src="https://www.gstatic.com/firebasejs/3.2.1/firebase.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-auth.js"></script>
@@ -22,9 +21,7 @@
     <script src="https://www.gstatic.com/firebasejs/ui/live/1.0/firebase-ui-auth.js"></script>
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script> 
-    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/live/1.0/firebase-ui-auth.css">
-  
     <link rel="shortcut icon" href="/static/favicon.ico">
 </head>
 <body>
@@ -36,8 +33,6 @@
 </header>
 
 {% block content %}{% endblock %}
-
-<script type="text/babel" src="/static/js/main.js"></script>
-<script type="text/babel" src="/static/js/learnReact.js"></script>
+<script type="text/javascript" src="/static/js/browser-bundle.js"></script>
 </body>
 </html>

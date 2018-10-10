@@ -1,3 +1,5 @@
+import Parent from "./learnReact";
+
 //START Utility functions
 function returnUniqueKey(){
     var array = new Uint32Array(1);
@@ -6,12 +8,6 @@ function returnUniqueKey(){
 }
 //END Utility functions
 
-// This is the host for the backend.
-if (location.hostname == 'localhost'){
-    var backendHostUrl = 'http://localhost:5000';
-} else {
-    var backendHostUrl = 'http://flask.jgorasia.com:80';
-}
 //console.log(location.hostname);
 
 // [START firenotes_config]
@@ -29,7 +25,7 @@ var config = {
 var userIdToken = null;
 var userUid = null;
 firebase.initializeApp(config);
-var fire_storage = firebase.storage();
+window.fire_storage = firebase.storage();
 
 // START Firebase log-in
 function configureFirebaseLogin() {    
@@ -42,8 +38,7 @@ function configureFirebaseLogin() {
             var welcomeName = name ? name : user.email;
             user.getToken().then(function(idToken) {
                 window.userIdToken = idToken;
-                userIdToken = idToken;
-                userUid = user.uid;
+                window.userUid = user.uid;
                 /* Now that the user is authenicated, fetch the notes. */
                 ReactDOM.render( <Parent />,document.getElementById('logged-in') );
                 document.getElementById('user').textContent = welcomeName;

@@ -1,3 +1,11 @@
+// This is the host for the backend.
+if (location.hostname == 'localhost'){
+    var backendHostUrl = 'http://localhost:5000';
+} else {
+    var backendHostUrl = 'http://flask.jgorasia.com:80';
+}
+
+
 class ImageBox extends React.Component{
     constructor(props){
         super(props);
@@ -6,10 +14,10 @@ class ImageBox extends React.Component{
     }
     componentDidMount () {
         var imgKey = this.props.name;
-        var storageRef = fire_storage.ref();
+        var storageRef = window.fire_storage.ref();
         var ImageBoxObject = this;
         if (this.props.imagePresent){
-            storageRef.child('user').child(userUid).child(imgKey+'.png').getDownloadURL()
+            storageRef.child('user').child(window.userUid).child(imgKey+'.png').getDownloadURL()
             .then(function(result) {
                 ImageBoxObject.setState({data:result});
             }).catch(function(error) {
@@ -200,7 +208,7 @@ class Parent extends React.Component {
         var request = new XMLHttpRequest();
         request.open('POST', backendHostUrl+'/post', true);
         request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
+        request.setRequestHeader('Authorization', 'Bearer ' + window.userIdToken);
         request.onreadystatechange = function() {
             if (request.readyState == 4 && request.status == 200) {
                 if (this.state.fileToUpload){
@@ -230,7 +238,7 @@ class Parent extends React.Component {
             contentType: 'image/'+file.name.split('.')[1]
         };
         // Upload file and metadata to the object 'images/mountains.jpg'
-        var uploadTask = fire_storage.ref().child('user/'+userUid+'/').child(key+'.png').put(file, metadata);
+        var uploadTask = window.fire_storage.ref().child('user/'+window.userUid+'/').child(key+'.png').put(file, metadata);
         // Register three observers:
         // 1. 'state_changed' observer, called any time the state changes
         // 2. Error observer, called on failure
@@ -288,7 +296,7 @@ class Parent extends React.Component {
             var request = new XMLHttpRequest();
             request.open('POST', backendHostUrl+'/update', true);
             request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-            request.setRequestHeader('Authorization', 'Bearer ' + userIdToken);
+            request.setRequestHeader('Authorization', 'Bearer ' + window.userIdToken);
             request.onreadystatechange = function() {
                 if (request.readyState == 4 && request.status == 200) {
                     this.fetchData();
@@ -382,3 +390,4 @@ class Parent extends React.Component {
     }
 }
 
+export default Parent;
